@@ -1,0 +1,28 @@
+# Fix: "Malformed entry 7 in list file /etc/apt/sources.list.d/caddy-stable.list"
+
+Run these two blocks on the server, in order.
+
+## Block 1 — repair apt (unblocks everything)
+
+```bash
+sudo rm -f /etc/apt/sources.list.d/caddy-stable.list
+ls /etc/apt/sources.list.d/
+sudo apt-get update
+```
+
+The last command must finish with **no `E:` lines**.
+
+## Block 2 — patch the setup script so it can't recreate the broken file
+
+```bash
+echo 'aW1wb3J0IHBhdGhsaWIKcCA9IHBhdGhsaWIuUGF0aCgnL29wdC9zdHVkeXBhbGFjZS9kZXBsb3kvc2V0dXAtbGlnaHRzYWlsLnNoJykKcyA9IHAucmVhZF90ZXh0KCkKCm9sZCA9ICIiIiAgY3VybCAtZnNTTCAnaHR0cHM6Ly9kbC5jbG91ZHNtaXRoLmlvL3B1YmxpYy9jYWRkeS9zdGFibGUvZGViaWFuLmRlYi50eHQnIFxcCiAgICA+IC9ldGMvYXB0L3NvdXJjZXMubGlzdC5kL2NhZGR5LXN0YWJsZS5saXN0CiAgc2VkIC1pICdzfF5kZWIgfGRlYiBbc2lnbmVkLWJ5PS91c3Ivc2hhcmUva2V5cmluZ3MvY2FkZHktc3RhYmxlLWFyY2hpdmUta2V5cmluZy5ncGddIHwnIFxcCiAgICAvZXRjL2FwdC9zb3VyY2VzLmxpc3QuZC9jYWRkeS1zdGFibGUubGlzdAoiIiIKCm5ldyA9ICIiIiAgbWtkaXIgLXAgL3Vzci9zaGFyZS9rZXlyaW5ncwogIGVjaG8gJ2RlYiBbc2lnbmVkLWJ5PS91c3Ivc2hhcmUva2V5cmluZ3MvY2FkZHktc3RhYmxlLWFyY2hpdmUta2V5cmluZy5ncGddIGh0dHBzOi8vZGwuY2xvdWRzbWl0aC5pby9wdWJsaWMvY2FkZHkvc3RhYmxlL2RlYi9kZWJpYW4gYW55LXZlcnNpb24gbWFpbicgPiAvZXRjL2FwdC9zb3VyY2VzLmxpc3QuZC9jYWRkeS1zdGFibGUubGlzdAoiIiIKCmlmIG9sZCBpbiBzOgogICAgcyA9IHMucmVwbGFjZShvbGQsIG5ldykKICAgIHAud3JpdGVfdGV4dChzKQogICAgcHJpbnQoJ1BBVENIRUQ6IHRoZSBtYWxmb3JtZWQgQ2FkZHkgcmVwbyBsaW5lIGNhbiBubyBsb25nZXIgYmUgY3JlYXRlZC4nKQplbGlmIG5ldy5zdHJpcCgpIGluIHM6CiAgICBwcmludCgnQUxSRUFEWSBQQVRDSEVEOiBub3RoaW5nIHRvIGRvLicpCmVsc2U6CiAgICBwcmludCgnV0FSTklORzogcGF0dGVybiBub3QgZm91bmQgLSB0aGUgc2NyaXB0IG1heSBiZSBhIGRpZmZlcmVudCB2ZXJzaW9uLicpCiAgICBwcmludCgnTWFudWFsIGNoZWNrOiAgZ3JlcCAtbiAic2VkIC1pIiAvb3B0L3N0dWR5cGFsYWNlL2RlcGxveS9zZXR1cC1saWdodHNhaWwuc2gnKQo=' | base64 -d | sudo python3 -
+```
+
+You should see: `PATCHED: the malformed Caddy repo line can no longer be created.`
+
+## Then re-run the installer
+
+```bash
+cd /opt/studypalace
+sudo -E bash deploy/setup-lightsail.sh
+```
